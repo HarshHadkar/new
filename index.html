@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Counting Down to 2026 ❤️</title>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@600&family=Quicksand:wght@300;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --deep-purple: #1a0b2e;
+            --mid-purple: #4834d4;
+            --soft-purple: #a29bfe;
+            --accent-lavender: #dcdde1;
+            --glow-purple: #be9eff;
+        }
+
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body, html {
+            margin: 0; padding: 0;
+            width: 100%; height: 100%;
+            font-family: 'Quicksand', sans-serif;
+            /* Multi-shade Purple Gradient */
+            background: radial-gradient(circle at center, #2d1b4e 0%, #1a0b2e 100%);
+            overflow: hidden;
+            display: flex; flex-direction: column;
+            justify-content: center; align-items: center;
+        }
+
+        /* --- Magical Floating Animations --- */
+        .stars {
+            position: absolute; width: 100%; height: 100%;
+            background: transparent; z-index: 1;
+        }
+
+        .bubble {
+            position: absolute;
+            background: rgba(190, 158, 255, 0.1);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 1;
+            animation: floatUp 15s infinite ease-in-out;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(110vh) scale(0); opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { transform: translateY(-10vh) scale(1.2); opacity: 0; }
+        }
+
+        /* --- UI Wrapper --- */
+        #ui-wrapper {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 35px 25px;
+            border-radius: 35px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(190, 158, 255, 0.2);
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            animation: fadeIn 1.5s ease;
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+        .title {
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(1.8rem, 8vw, 2.8rem);
+            color: var(--glow-purple);
+            margin-bottom: 25px;
+            text-shadow: 0 0 20px rgba(190, 158, 255, 0.6);
+        }
+
+        #timer { display: flex; gap: 10px; justify-content: center; }
+
+        .unit {
+            background: rgba(162, 155, 254, 0.1);
+            padding: 15px 10px; border-radius: 20px;
+            flex: 1; min-width: 65px;
+            border: 1px solid rgba(162, 155, 254, 0.2);
+            transition: transform 0.3s ease;
+        }
+        
+        .unit:hover { transform: translateY(-5px); border-color: var(--glow-purple); }
+
+        .unit span { display: block; font-size: clamp(1.3rem, 5vw, 1.8rem); font-weight: bold; color: white; }
+        .unit label { font-size: 0.6rem; color: var(--soft-purple); text-transform: uppercase; letter-spacing: 1px; }
+
+        /* --- Animated Button --- */
+        #unlockBtn {
+            margin-top: 35px;
+            padding: 18px 30px; 
+            width: 100%;
+            font-size: 1.1rem; font-weight: bold;
+            border: none; border-radius: 50px; color: #666;
+            background: rgba(255,255,255,0.05); 
+            cursor: not-allowed;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        #unlockBtn.ready {
+            background: linear-gradient(45deg, #6c5ce7, #a29bfe);
+            color: white;
+            cursor: pointer;
+            box-shadow: 0 10px 30px rgba(108, 92, 231, 0.4);
+        }
+
+        #unlockBtn.ready:hover { transform: scale(1.05); filter: brightness(1.2); }
+
+        /* --- Scrollable Message Overlay --- */
+        #overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(26, 11, 46, 0.95);
+            display: none; z-index: 100;
+            justify-content: center; align-items: center;
+            padding: 20px;
+        }
+
+        #popup {
+            width: 100%; max-width: 420px; height: auto; max-height: 85vh;
+            background: white; border-radius: 40px;
+            overflow-y: auto; position: relative;
+            transform: translateY(100px); opacity: 0;
+            transition: all 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.5);
+        }
+
+        #popup.active { transform: translateY(0); opacity: 1; }
+
+        .photo-header { width: 100%; line-height: 0; }
+        .photo-header img { width: 100%; border-radius: 40px 40px 0 0; display: block; }
+
+        .letter-body {
+            padding: 35px 30px;
+            font-family: 'Dancing Script', cursive;
+            font-size: clamp(1.6rem, 6vw, 2rem); 
+            color: var(--deep-purple);
+            line-height: 1.6; text-align: center;
+        }
+
+        /* --- Audio Toggle --- */
+        #musicToggle {
+            position: fixed; top: 20px; right: 20px;
+            background: rgba(162, 155, 254, 0.2); border: 1px solid rgba(162, 155, 254, 0.4);
+            color: white; width: 45px; height: 45px; border-radius: 50%; 
+            cursor: pointer; z-index: 1000; display: none;
+            backdrop-filter: blur(10px);
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="stars" id="starField"></div>
+
+    <audio id="bgMusic" loop><source src="music.mpeg" type="audio/mpeg"></audio>
+    <button id="musicToggle">🎵</button>
+
+    <div id="ui-wrapper">
+        <h1 class="title">Counting down to 2026, My Love... 💜</h1>
+        <div id="timer">
+            <div class="unit"><span id="days">00</span><label>Days</label></div>
+            <div class="unit"><span id="hours">00</span><label>Hours</label></div>
+            <div class="unit"><span id="mins">00</span><label>Mins</label></div>
+            <div class="unit"><span id="secs">00</span><label>Secs</label></div>
+        </div>
+        <button id="unlockBtn">🔒 Locked Until Midnight</button>
+    </div>
+
+    <div id="overlay">
+        <div id="popup">
+            <div class="photo-header">
+                <img src="3.jpeg" alt="Our Moment">
+            </div>
+            <div class="letter-body">
+                <p id="typedText"></p>
+                <div style="height: 60px;"></div>
+                <p style="font-size: 1.1rem; opacity: 0.5; font-family: 'Quicksand'; color: #666;">(Scroll down for more 💜)</p>
+                <div style="height: 180px;"></div>
+                <p>You are the highlight of my year, and every year to come. Me tula sangu ny shakt me tujavr kiti prem karto pudchya varshi ajun prem karu ajun bhandu😂 . I Love You Anku💋❤️ </p>
+                <p>Thank you for being you.</p>
+                <div style="height: 40px;"></div>
+                <p style="font-size: 2.8rem; color: #6c5ce7;">Happy New Year! 💜</p>
+                <div style="height: 40px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 1. DATE SETTINGS
+        const targetDate = new Date("Jan 1, 2025 00:00:00").getTime();
+        const letter = "My Dearest, Happy New Year! ✨ As we enter 2026, I wanted to create something as special as you are. This photo holds one of my favorite memories, but I know the coming year will bring thousands more. I love you more than words can type...";
+
+        // 2. MAGICAL BUBBLES ANIMATION
+        function createBubbles() {
+            const starField = document.getElementById('starField');
+            for(let i = 0; i < 20; i++) {
+                let bubble = document.createElement('div');
+                bubble.className = 'bubble';
+                let size = Math.random() * 60 + 10 + 'px';
+                bubble.style.width = size;
+                bubble.style.height = size;
+                bubble.style.left = Math.random() * 100 + 'vw';
+                bubble.style.animationDelay = Math.random() * 15 + 's';
+                bubble.style.animationDuration = Math.random() * 10 + 10 + 's';
+                starField.appendChild(bubble);
+            }
+        }
+        createBubbles();
+
+        // 3. UI LOGIC
+        const unlockBtn = document.getElementById('unlockBtn');
+        const audio = document.getElementById('bgMusic');
+        const musicToggle = document.getElementById('musicToggle');
+
+        function updateTimer() {
+            const now = new Date().getTime();
+            const diff = targetDate - now;
+
+            if (diff > 0) {
+                const d = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const h = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const m = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const s = Math.floor((diff % (1000 * 60)) / 1000);
+                document.getElementById('days').innerText = d < 10 ? "0"+d : d;
+                document.getElementById('hours').innerText = h < 10 ? "0"+h : h;
+                document.getElementById('mins').innerText = m < 10 ? "0"+m : m;
+                document.getElementById('secs').innerText = s < 10 ? "0"+s : s;
+            } else {
+                unlockBtn.classList.add('ready');
+                unlockBtn.innerHTML = "🎁 Open Your Surprise 💜";
+                document.querySelector('.title').innerText = "It's 2026! Happy New Year!";
+            }
+        }
+        setInterval(updateTimer, 1000);
+        updateTimer();
+
+        unlockBtn.addEventListener('click', () => {
+            if(unlockBtn.classList.contains('ready')) {
+                document.getElementById('overlay').style.display = 'flex';
+                document.getElementById('ui-wrapper').style.opacity = '0';
+                setTimeout(() => {
+                    document.getElementById('popup').classList.add('active');
+                    typeWriter();
+                }, 100);
+                audio.play();
+                musicToggle.style.display = 'block';
+            }
+        });
+
+        musicToggle.addEventListener('click', () => {
+             if (audio.paused) audio.play(); else audio.pause();
+        });
+
+        let charI = 0;
+        function typeWriter() {
+            if (charI < letter.length) {
+                document.getElementById("typedText").innerHTML += letter.charAt(charI);
+                charI++;
+                setTimeout(typeWriter, 50);
+            }
+        }
+    </script>
+</body>
+</html>
